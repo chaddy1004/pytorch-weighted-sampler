@@ -57,7 +57,6 @@ class OverSampler(DataLoader):
                          sampler=self.sampler)
 
     def init_sampler(self):
-        # class 0 : 43200개, class 1 : 4800개
         labels = self.dataset.shuffled_labels
 
         class_counts = {0: self.dataset.n_negatives, 1: self.dataset.n_positives}
@@ -79,7 +78,6 @@ class UnderSampler(DataLoader):
         self.n_samples = len(self.dataset)
         self.replacement = False
 
-        # self.final_size = self.dataset.n_negatives * 2
         self.final_size = self.dataset.n_negatives * 2
 
         self.init_sampler()
@@ -90,7 +88,6 @@ class UnderSampler(DataLoader):
                          sampler=self.sampler)
 
     def init_sampler(self):
-        # class 0 : 43200개, class 1 : 4800개
         labels = self.dataset.shuffled_labels
 
         class_counts = {0: self.dataset.n_negatives, 1: self.dataset.n_positives}
@@ -120,7 +117,6 @@ class NormalSampler(DataLoader):
                          sampler=self.sampler)
 
     def init_sampler(self):
-        # class 0 : 43200개, class 1 : 4800개
         labels = self.dataset.shuffled_labels
 
         class_counts = {0: self.dataset.n_negatives, 1: self.dataset.n_positives}
