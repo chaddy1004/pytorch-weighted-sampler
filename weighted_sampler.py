@@ -22,21 +22,31 @@ class VanillaDataset(Dataset):
     def __init__(self, ratio, len_normal=100) -> None:
         super().__init__()
 
+        self.positive_data = []
+        self.negative_data = []
+
         self.positive_labels = [1 for _ in range(len_normal * ratio)]
         self.negative_labels = [0 for _ in range(len_normal)]
+
+        for i in range(len(self.positive_labels)):
+            self.positive_data.append(i + 1)
+
+        for i in range(len(self.negative_labels)):
+            self.negative_data.append(-1 * (i + 1))
 
         self.n_positives = len(self.positive_labels)
         self.n_negatives = len(self.negative_labels)
 
-        self.shuffled_labels = self.positive_labels + self.negative_labels
+        self.datas = self.positive_data + self.negative_data
+        self.labels = self.positive_labels + self.negative_labels
 
-        random.shuffle(self.shuffled_labels)
+        # random.shuffle(self.shuffled_labels)
 
     def __getitem__(self, index):
-        return self.shuffled_labels[index]
+        return (self.datas[index], self.labels[index])
 
     def __len__(self):
-        return len(self.shuffled_labels)
+        return len(self.labels)
 
 
 class OverSampler(DataLoader):
@@ -57,7 +67,7 @@ class OverSampler(DataLoader):
                          sampler=self.sampler)
 
     def init_sampler(self):
-        labels = self.dataset.shuffled_labels
+        labels = self.dataset.labels
 
         class_counts = {0: self.dataset.n_negatives, 1: self.dataset.n_positives}
         class_weights = defaultdict()
@@ -88,7 +98,7 @@ class UnderSampler(DataLoader):
                          sampler=self.sampler)
 
     def init_sampler(self):
-        labels = self.dataset.shuffled_labels
+        labels = self.dataset.labels
 
         class_counts = {0: self.dataset.n_negatives, 1: self.dataset.n_positives}
         class_weights = defaultdict()
@@ -117,7 +127,7 @@ class NormalSampler(DataLoader):
                          sampler=self.sampler)
 
     def init_sampler(self):
-        labels = self.dataset.shuffled_labels
+        labels = self.dataset.labels
 
         class_counts = {0: self.dataset.n_negatives, 1: self.dataset.n_positives}
         class_weights = defaultdict()
@@ -128,3 +138,27 @@ class NormalSampler(DataLoader):
 
         weights = [class_weights[labels[i]] for i in range(self.n_samples)]
         self.sampler = WeightedRandomSampler(torch.DoubleTensor(weights), self.final_size, replacement=self.replacement)
+
+
+class VanillaDataset2(Dataset):
+    def __init__(self, ratio, len_normal=100) -> None:
+        super().__init__()
+
+        self.positive_labels = [1 for _ in range(len_normal * ratio)]
+        self.negative_labels = [0 for _ in range(len_normal)]
+
+        self.positive_data = []
+        self.negative_data = []
+
+        self.n_positives = len(self.positive_labels)
+        self.n_negatives = len(self.negative_labels)
+
+        self.shuffled_labels = self.positive_labels + self.negative_labels
+
+        random.shuffle(self.shuffled_labels)
+
+    def __getitem__(self, index):
+        return self.shuffled_labels[index]
+
+    def __len__(self):
+        return len(self.shuffled_labels)
